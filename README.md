@@ -1,12 +1,7 @@
 # True Solar Time Calculator
 
-[![npm package][npm-img]][npm-url]
-[![Build Status][build-img]][build-url]
-[![Downloads][downloads-img]][downloads-url]
-[![Issues][issues-img]][issues-url]
-[![Code Coverage][codecov-img]][codecov-url]
-[![Commitizen Friendly][commitizen-img]][commitizen-url]
-[![Semantic Release][semantic-release-img]][semantic-release-url]
+![version](https://img.shields.io/npm/v/true-solar-time-calculator?color=yellow&label=version)
+![license-MIT](https://img.shields.io/badge/license-MIT-green.svg) 
 
 > A TypeScript utility for calculating **True Solar Time** and **Equation of Time** based on date and geographic coordinates (longitude, latitude).  
 > 计算真太阳时（True Solar Time）与时间均差（Equation of Time）的 TypeScript 工具库。
