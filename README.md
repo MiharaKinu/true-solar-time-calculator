@@ -1,6 +1,6 @@
 # True Solar Time Calculator
 
-![version](https://img.shields.io/npm/v/true-solar-time-calculator?color=yellow&label=version)
+![version1](https://img.shields.io/npm/v/true-solar-time-calculator?color=yellow&label=version&t=1)
 ![license-MIT](https://img.shields.io/badge/license-MIT-green.svg) 
 
 > A TypeScript utility for calculating **True Solar Time** and **Equation of Time** based on date and geographic coordinates (longitude, latitude).  
