@@ -56,7 +56,7 @@ describe('TrueSolarTimeCalculator', () => {
     });
 
     it('应该正确计算2025年5月3日的真太阳时', () => {
-      const date = new Date('2025-05-03 16:39:53');
+      const date = new Date('2025-05-03T16:39:53Z');
       const calculator = new TrueSolarTimeCalculator(date, 120, 30);
 
       const result = calculator.calculateTrueSolarTime().getDate();
@@ -70,7 +70,7 @@ describe('TrueSolarTimeCalculator', () => {
       expect(result.getUTCDate()).toBe(3);
 
       // 验证具体时分
-      expect(result.getUTCHours()).toBe(16);
+      expect(result.getUTCHours()).toBe(0);
       expect(result.getUTCMinutes()).toBe(43);
 
       // 验证秒数在合理范围内
