@@ -15,7 +15,7 @@ npm install true-solar-time-calculator
 or
 
 ```bash
-yarn add true-solar-time-calculator
+bun add true-solar-time-calculator
 ```
 
 ## 🚀 Usage
