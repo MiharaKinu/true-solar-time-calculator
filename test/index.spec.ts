@@ -1,4 +1,5 @@
 import { TrueSolarTimeCalculator } from '../src';
+// eslint-disable-next-line node/no-extraneous-import
 import { describe, it, expect } from '@jest/globals';
 
 describe('TrueSolarTimeCalculator', () => {

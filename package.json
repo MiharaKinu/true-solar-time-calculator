@@ -1,8 +1,9 @@
 {
   "name": "true-solar-time-calculator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "用于计算真太阳时的库",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib/**/*"
   ],

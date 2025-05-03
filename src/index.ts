@@ -103,52 +103,6 @@ export class TrueSolarTimeCalculator {
           'Cannot calculate Equation of Time: Julian Day is invalid.'
         );
       }
-      const T = (jd - 2451545.0) / 36525;
-      const L0_deg = AstroUtils.normalizeDegrees(
-        280.46646 + 36000.76983 * T + 0.0003032 * T * T
-      );
-      const M_deg = AstroUtils.normalizeDegrees(
-        357.52911 + 35999.05029 * T - 0.0001537 * T * T
-      );
-      const e = 0.016708634 - 0.000042037 * T - 0.0000001267 * T * T;
-      const L0_rad = AstroUtils.degreesToRadians(L0_deg);
-      const M_rad = AstroUtils.degreesToRadians(M_deg);
-
-      const eot_minutes =
-        -(1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M_rad) -
-        (0.019993 - 0.000101 * T) * Math.sin(2 * M_rad) +
-        (2.29166 * Math.sin(2 * L0_rad) + // Using L0 instead of Right Ascension here is an approximation
-          0.024 * Math.sin(4 * L0_rad)) *
-          // + more terms for higher accuracy
-          2; // Factor 2 approx conversion RA diff to time diff
-
-      // Convert EoT from minutes to seconds
-      // Note: This specific EoT formula might differ slightly from the one originally provided,
-      // aiming for a more standard structure. The original one had unusual terms.
-      // A common alternative (derived from Right Ascension vs Mean Longitude):
-      // y = tan^2(obliquity/2)
-      // EOT (minutes) = 4 * (y * sin(2*L0) - e * sin(M) + ...)
-      // The factor of 4 converts degrees of RA difference to minutes of time.
-
-      // Let's recalculate using the formula structure similar to the original *but potentially corrected*:
-      // Using the apparent longitude (lambda) and obliquity (epsilon) approach:
-      const C_deg =
-        (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M_rad) +
-        (0.019993 - 0.000101 * T) * Math.sin(2 * M_rad) +
-        0.000289 * Math.sin(3 * M_rad); // Equation of Center
-      const trueLongitude_deg = L0_deg + C_deg;
-      //const omega_deg = 125.04 - 1934.136 * T; // For nutation (minor effect on EoT calc)
-      const lambda_deg = trueLongitude_deg - 0.00569; // Apparent longitude (simplified nutation/aberration)
-      // - 0.00478 * Math.sin(AstroUtils.degreesToRadians(omega_deg));
-      const epsilon_deg = 23.439291 - 0.0130042 * T - 0.00000016 * T * T; // Obliquity
-
-      // EoT in degrees of Right Ascension difference (needs conversion to time)
-      const E_deg = L0_deg - 0.00569 - lambda_deg + C_deg; // Approximation based on comparing mean and true motion projected onto equator
-
-      // Convert EoT from degrees of RA difference to seconds of time
-      // 1 degree of RA = 24 hours / 360 degrees = 1/15 hours = 4 minutes = 240 seconds
-      // However, the calculation using L0, M, e often directly gives time difference related components.
-      // Let's stick to a more standard approximation often used in solar contexts (results in minutes):
       const B_rad = AstroUtils.degreesToRadians(
         (360 / 365) * (this.dayOfYear - 81)
       ); // Simplified angular day
@@ -156,35 +110,12 @@ export class TrueSolarTimeCalculator {
         9.87 * Math.sin(2 * B_rad) -
         7.53 * Math.cos(B_rad) -
         1.5 * Math.sin(B_rad);
-
-      // Using the formula structure you provided, assuming EoT_deg was meant to be degrees RA difference:
-      /*
-      const y = Math.tan(AstroUtils.degreesToRadians(epsilon_deg / 2));
-      const y2 = y * y;
-      const lambda_rad = AstroUtils.degreesToRadians(lambda_deg);
-      const EoT_deg_orig = y2 * Math.sin(2 * lambda_rad) -
-                           2 * e * Math.sin(M_rad) +
-                           4 * e * y2 * Math.sin(M_rad) * Math.cos(2 * lambda_rad) -
-                           0.5 * y2 * y2 * Math.sin(4 * lambda_rad) -
-                           1.25 * e * e * Math.sin(2 * M_rad);
-      this._equationOfTimeSeconds = AstroUtils.radiansToDegrees(EoT_deg_orig) * 240; // Convert *degrees* of angle to seconds
-      // Re-evaluating: If EoT_deg_orig was already in *radians* representing the time angle, conversion should be:
-      // this._equationOfTimeSeconds = AstroUtils.radiansToDegrees(EoT_deg_orig) * 4 * 60; // radians -> degrees -> minutes -> seconds
-      // OR: this._equationOfTimeSeconds = EoT_deg_orig * (180/Math.PI) * 240;
-      // Let's assume the original formula *intended* EoT_deg_orig to be in *radians* corresponding to time offset.
-      // If EoT_deg_orig is in Radians -> convert to degrees -> multiply by 4 min/deg -> * 60 sec/min
-       this._equationOfTimeSeconds = AstroUtils.radiansToDegrees(EoT_deg_orig) * 240; // Keep original interpretation: Result is degrees angle, convert to seconds
-       */
-
-      // Sticking with the simpler B-based approximation for robustness unless the complex one is verified
       this._equationOfTimeSeconds = eotMinutesApprox * 60;
     }
     if (isNaN(this._equationOfTimeSeconds)) {
       console.warn(
         'Equation of Time calculation resulted in NaN. Check input date and formulas.'
       );
-      // Optionally throw an error or return NaN
-      // throw new Error("Equation of Time calculation failed.");
     }
     return this._equationOfTimeSeconds ?? NaN; // Return NaN if null (though should be calculated or throw)
   }
@@ -282,12 +213,11 @@ export class TrueSolarTimeCalculator {
 
   /**
    * Formats the calculated True Solar Time Date object into a string.
-   * Ensures TST is calculated if it hasn't been already.
    * @param formatString A format string (e.g., 'YYYY-MM-DD HH:mm:ss'). Default is 'YYYY-MM-DD HH:mm:ss'.
    *                     Supports YYYY, MM, DD, HH, mm, ss placeholders.
    * @returns The formatted date string.
    */
-  format(formatString: string = 'YYYY-MM-DD HH:mm:ss'): string {
+  format(formatString = 'YYYY-MM-DD HH:mm:ss'): string {
     const date = this.getDate(); // This ensures calculation and gets a valid date or throws
 
     // Extract components using UTC methods, as the internal _trueSolarTime is stored as UTC
