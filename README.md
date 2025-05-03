@@ -34,9 +34,10 @@ console.log(`Longitude: ${calculator.longitude}°`);
 console.log(`Latitude: ${calculator.latitude}°`);
 console.log(`Julian Day: ${calculator.julianDay.toFixed(5)}`);
 console.log(`Equation of Time: ${calculator.getHumanReadableEOT()}`);
-console.log(`True Solar Time (ISO): ${calculator.trueSolarTime().getDate().toISOString()}`);
-console.log(`True Solar Time (Formatted): ${calculator.trueSolarTime().format()}`);
+console.log(`True Solar Time (ISO): ${calculator.calculateTrueSolarTime().getDate().toISOString()}`);
+console.log(`True Solar Time (Formatted): ${calculator.calculateTrueSolarTime().format()}`);
 console.log(`True Solar Time (HH:MM:SS): ${calculator.getTrueSolarTimeString()}`);
+
 ```
 
 ## 🛠 API
